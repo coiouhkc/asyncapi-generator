@@ -1,0 +1,73 @@
+asyncapi: '2.0.0'
+info:
+  title: Concluded API
+  version: '1.0.0'
+  description: |
+    The Concluded API allows you to consume new concluded values computed by SEP/SXP
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0'
+
+servers:
+  production:
+    url: saumesqa001:{port},saumesqa002:{port},saumesqa003:{port}
+    protocol: kafka
+    variables:
+      port:
+        default: '9092'
+        enum:
+          - '9092'
+          - '9093'
+          - '9096'
+          - '9097'
+
+channels:
+  sef-concluded:
+    subscribe:
+      bindings:
+        kafka:
+          groupId: sef-concluded-group-external
+          key: ConcludedKey
+      operationId: writeConcludedForExternalUsage
+      message:
+        $ref: '#/components/messages/Concluded'
+    publish:
+      bindings:
+        kafka:
+          groupId: sef-concluded-group-internal
+          key: ConcludedKey
+      operationId: readConcludedInternal
+      message:
+        $ref: '#/components/messages/Concluded'
+components:
+  messages:
+    Concluded:
+      summary: Concluded value for a meter
+      payload:
+        $ref: "#/components/schemas/ConcludedPayload"
+  schemas:
+    ConcludedKey:
+      type: object
+      properties:
+        myprop:
+          type: string
+    ConcludedPayload:
+      type: object
+      properties:
+        meterId:
+          type: integer
+          minimum: 0
+        version:
+          type: string
+          format: date-time
+        timestampOriginal:
+          type: string
+          format: date-time
+        timestampLocal:
+          type: string
+          format: date-time
+        value:
+          type: number
+          format: double
+        state:
+          type: string
