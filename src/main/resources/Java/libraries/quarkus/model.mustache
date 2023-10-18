@@ -1,0 +1,29 @@
+package {{package}}.model;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import java.util.Date;
+import java.util.UUID;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.HashMap;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Builder(toBuilder = true)
+@Data
+public class {{name}} {
+  {{#properties}}
+    private {{javaDataType}} {{name}};
+  {{/properties}}
+}
