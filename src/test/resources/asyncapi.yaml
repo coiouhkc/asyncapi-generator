@@ -1,73 +1,59 @@
-asyncapi: '2.0.0'
+asyncapi: '3.0.0'
 info:
-  title: Concluded API
+  title: Test API
   version: '1.0.0'
   description: |
-    The Concluded API allows you to consume new concluded values computed by SEP/SXP
+    The Test API allows to test asyncapi generator, targeting 3.0.0 (next major)
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
 
 servers:
   production:
-    url: saumesqa001:{port},saumesqa002:{port},saumesqa003:{port}
+    url: kafka:9092
     protocol: kafka
-    variables:
-      port:
-        default: '9092'
-        enum:
-          - '9092'
-          - '9093'
-          - '9096'
-          - '9097'
 
 channels:
-  sef-concluded:
+  inout:
     subscribe:
       bindings:
         kafka:
-          groupId: sef-concluded-group-external
-          key: ConcludedKey
-      operationId: writeConcludedForExternalUsage
+          groupId: in-group
+          key: TestKey
+      operationId: read
       message:
-        $ref: '#/components/messages/Concluded'
+        payload:
+          $ref: "#/components/schemas/TestPayload"
     publish:
       bindings:
         kafka:
-          groupId: sef-concluded-group-internal
-          key: ConcludedKey
-      operationId: readConcludedInternal
+          groupId: ou-group
+          key: TestKey
+      operationId: write
       message:
-        $ref: '#/components/messages/Concluded'
+        payload:
+          $ref: "#/components/schemas/TestPayload"
 components:
-  messages:
-    Concluded:
-      summary: Concluded value for a meter
-      payload:
-        $ref: "#/components/schemas/ConcludedPayload"
   schemas:
-    ConcludedKey:
+    TestEmpty:
+      type: object
+    TestKey:
       type: object
       properties:
-        myprop:
+        key:
           type: string
-    ConcludedPayload:
+    TestPayload:
       type: object
       properties:
-        meterId:
+        prop1:
           type: integer
           minimum: 0
-        version:
+        prop2:
           type: string
           format: date-time
-        timestampOriginal:
-          type: string
-          format: date-time
-        timestampLocal:
-          type: string
-          format: date-time
-        value:
+        prop3:
           type: number
           format: double
-        state:
+        prop4:
           type: string
+          enum: [THIS, THAT]
