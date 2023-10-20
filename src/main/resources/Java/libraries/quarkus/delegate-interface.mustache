@@ -1,0 +1,15 @@
+package {{package}}.service;
+
+import {{package}}.model.*;
+
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+
+import io.smallrye.reactive.messaging.kafka.Record;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+public interface {{delegateInterfaceName}} {
+    public void {{subscribe.operationId}}(Record<{{subscribe.message.kafkaMessageBinding.key.name}}, {{subscribe.message.payload.name}}> record) {
+        throw new RuntimeException("Not implemented!");
+    }
+}
