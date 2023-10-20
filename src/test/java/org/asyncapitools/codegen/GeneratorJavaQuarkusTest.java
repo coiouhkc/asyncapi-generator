@@ -16,40 +16,54 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GeneratorJavaQuarkusTest {
 
+  Generator generator = new Generator();
+
+  Handlebars handlebars;
+
+  CodegenConfig config;
+
+  @BeforeEach
+  void setUp() {
+    config =
+        new CodegenConfig(
+            "src/test/resources/asyncapi.yaml",
+            "target/generated-sources/asyncapi/",
+            "org.acme",
+            "Java",
+            "quarkus");
+
+    TemplateLoader loader = new ClassPathTemplateLoader();
+    loader.setPrefix("/" + "Java" + "/libraries/" + "quarkus");
+    loader.setSuffix(".mustache");
+    handlebars = new Handlebars(loader);
+  }
+
+  @Test
+  void wip() throws IOException {
     Generator generator = new Generator();
+    generator.generate(config);
+  }
 
-    Handlebars handlebars;
-
-    CodegenConfig config;
-
-    @BeforeEach
-    void setUp() {
-        config = new CodegenConfig(
-                "src/test/resources/asyncapi.yaml", "target/generated-sources/asyncapi/", "org.acme", "Java", "quarkus");
-
-        TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setPrefix("/" + "Java" + "/libraries/" + "quarkus");
-        loader.setSuffix(".mustache");
-        handlebars = new Handlebars(loader);
-    }
-
-    @Test
-    void wip() throws IOException {
-        Generator generator = new Generator();
-        generator.generate(config);
-    }
-
-    @Test
-    void generateModel() {
-        Pair<String, String> pair = generator.generateModel(
+  @Test
+  void generateModel() {
+    List<Pair<String, String>> models =
+        generator
+            .generateModel(
                 handlebars,
                 config,
                 new Asyncapi.Component(
-                        "#/components/schemas/Test", "Test", Set.of(new Asyncapi.Property("ts", "string", "date-time"))));
+                    "#/components/schemas/Test",
+                    "Test",
+                    Set.of(new Asyncapi.Property("ts", "string", "date-time"))))
+            .collect(Collectors.toList());
 
-        assertThat(pair).isNotNull();
-        assertThat(pair.getKey()).isEqualTo("target/generated-sources/asyncapi/src/gen/java/org/acme/model/Test.java");
-        assertThat(pair.getValue()).isEqualToIgnoringWhitespace("""
+    assertThat(models).isNotNull();
+    assertThat(models).hasSize(3);
+    assertThat(models.get(0).getKey())
+        .isEqualTo("target/generated-sources/asyncapi/src/gen/java/org/acme/model/Test.java");
+    assertThat(models.get(0).getValue())
+        .isEqualToIgnoringWhitespace(
+            """
                 package org.acme.model;
 
                 import java.util.List;
@@ -77,38 +91,49 @@ public class GeneratorJavaQuarkusTest {
                 @Data
                 @Jacksonized
                 public class Test {
-                  
-                    private OffsetDateTime ts;
-                  
-                }""");
-    }
 
-    @Test
-    void generateApi() {
-        List<Pair<String, String>> apis = generator.generateApi(
+                    private OffsetDateTime ts;
+
+                }""");
+  }
+
+  @Test
+  void generateApi() {
+    List<Pair<String, String>> apis =
+        generator
+            .generateApi(
                 handlebars,
                 config,
                 new Asyncapi.Channel(
-                        "inout",
-                        new Asyncapi.ChannelItem(
-                                "read",
-                                new Asyncapi.KafkaChannelBinding("in-group"),
-                                new Asyncapi.Message(
-                                        new Asyncapi.Component("#/components/schemas/TestPayload", "TestPayload", null),
-                                        new Asyncapi.KafkaMessageBinding(
-                                                new Asyncapi.Component("#/components/schemas/TestKey", "TestKey", null)))),
-                        new Asyncapi.ChannelItem(
-                                "write",
-                                new Asyncapi.KafkaChannelBinding("out-group"),
-                                new Asyncapi.Message(
-                                        new Asyncapi.Component("#/components/schemas/TestPayload", "TestPayload", null),
-                                        new Asyncapi.KafkaMessageBinding(
-                                                new Asyncapi.Component("#/components/schemas/TestKey", "TestKey", null)))))).collect(Collectors.toList());
+                    "inout",
+                    new Asyncapi.ChannelItem(
+                        "read",
+                        new Asyncapi.KafkaChannelBinding("in-group"),
+                        new Asyncapi.Message(
+                            new Asyncapi.Component(
+                                "#/components/schemas/TestPayload", "TestPayload", null),
+                            new Asyncapi.KafkaMessageBinding(
+                                new Asyncapi.Component(
+                                    "#/components/schemas/TestKey", "TestKey", null)))),
+                    new Asyncapi.ChannelItem(
+                        "write",
+                        new Asyncapi.KafkaChannelBinding("out-group"),
+                        new Asyncapi.Message(
+                            new Asyncapi.Component(
+                                "#/components/schemas/TestPayload", "TestPayload", null),
+                            new Asyncapi.KafkaMessageBinding(
+                                new Asyncapi.Component(
+                                    "#/components/schemas/TestKey", "TestKey", null))))))
+            .collect(Collectors.toList());
 
-        assertThat(apis).isNotNull();
-        assertThat(apis).hasSize(2);
-        assertThat(apis.get(0).getKey()).isEqualTo("target/generated-sources/asyncapi/src/gen/java/org/acme/service/InoutService.java");
-        assertThat(apis.get(0).getValue()).isEqualToIgnoringWhitespace("""
+    assertThat(apis).isNotNull();
+    assertThat(apis).hasSize(2);
+    assertThat(apis.get(0).getKey())
+        .isEqualTo(
+            "target/generated-sources/asyncapi/src/gen/java/org/acme/service/InoutService.java");
+    assertThat(apis.get(0).getValue())
+        .isEqualToIgnoringWhitespace(
+            """
 package org.acme.service;
 
 import org.acme.model.*;
@@ -129,8 +154,12 @@ public class InoutService {
   }
 }""");
 
-      assertThat(apis.get(1).getKey()).isEqualTo("target/generated-sources/asyncapi/src/gen/java/org/acme/service/InoutDelegateI.java");
-      assertThat(apis.get(1).getValue()).isEqualToIgnoringWhitespace("""
+    assertThat(apis.get(1).getKey())
+        .isEqualTo(
+            "target/generated-sources/asyncapi/src/gen/java/org/acme/service/InoutDelegateI.java");
+    assertThat(apis.get(1).getValue())
+        .isEqualToIgnoringWhitespace(
+            """
 package org.acme.service;
 
 import org.acme.model.*;
@@ -146,5 +175,5 @@ public interface InoutDelegateI {
         throw new RuntimeException("Not implemented!");
     }
 }""");
-    }
+  }
 }

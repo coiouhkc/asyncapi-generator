@@ -37,7 +37,7 @@ public class Generator {
     // generate models
     Set<Pair<String, String>> models =
         asyncapi.getComponents().stream()
-            .map(component -> generateModel(handlebars, config, component))
+            .flatMap(component -> generateModel(handlebars, config, component))
             .collect(Collectors.toSet());
 
     // generate apis
@@ -58,34 +58,41 @@ public class Generator {
   }
 
   @SneakyThrows
-  public Pair<String, String> generateModel(
+  public Stream<Pair<String, String>> generateModel(
       Handlebars handlebars, CodegenConfig config, Asyncapi.Component component) {
-    Template modelTemplate = handlebars.compile("model");
     Context context = Context.newContext(component).combine("package", config.getOutputPackage());
+
+    Template modelTemplate = handlebars.compile("model");
     String content = modelTemplate.apply(context);
 
-    return Pair.of(
+    Template serializerTemplate = handlebars.compile("serializer");
+    String serializerContent = serializerTemplate.apply(context);
+
+    Template deserializerTemplate = handlebars.compile("deserializer");
+    String deserializerContent = deserializerTemplate.apply(context);
+
+    String modelDir =
         config.getPathToOutputDirectory()
             + "src/gen/java/"
             + config.getOutputPackage().replaceAll("\\.", "/")
-            + "/model/"
-            + component.getName()
-            + ".java",
-        content);
+            + "/model/";
+
+    return Stream.of(
+        Pair.of(modelDir + component.getName() + ".java", content),
+        Pair.of(modelDir + component.getName() + "Serializer.java", serializerContent),
+        Pair.of(modelDir + component.getName() + "Deserializer.java", deserializerContent));
   }
 
   @SneakyThrows
   public Stream<Pair<String, String>> generateApi(
       Handlebars handlebars, CodegenConfig config, Asyncapi.Channel channel) {
+    Context context = Context.newContext(channel).combine("package", config.getOutputPackage());
+
     Template serviceTemplate = handlebars.compile("service");
-    Context serviceContext =
-        Context.newContext(channel).combine("package", config.getOutputPackage());
-    String serviceContent = serviceTemplate.apply(serviceContext);
+    String serviceContent = serviceTemplate.apply(context);
 
     Template delegateInterfaceTemplate = handlebars.compile("delegate-interface");
-    Context delegateInterfaceContext =
-        Context.newContext(channel).combine("package", config.getOutputPackage());
-    String delegateInterfaceContent = delegateInterfaceTemplate.apply(delegateInterfaceContext);
+    String delegateInterfaceContent = delegateInterfaceTemplate.apply(context);
 
     String serviceDir =
         config.getPathToOutputDirectory()
