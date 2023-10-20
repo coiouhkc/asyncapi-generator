@@ -19,9 +19,11 @@ import java.time.OffsetDateTime;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 @Builder(toBuilder = true)
 @Data
+@Jacksonized
 public class {{name}} {
   {{#properties}}
     private {{javaDataType}} {{name}};

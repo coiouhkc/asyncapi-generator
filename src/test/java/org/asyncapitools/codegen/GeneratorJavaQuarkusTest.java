@@ -71,9 +71,11 @@ public class GeneratorJavaQuarkusTest {
 
                 import lombok.Builder;
                 import lombok.Data;
+                import lombok.extern.jackson.Jacksonized;
 
                 @Builder(toBuilder = true)
                 @Data
+                @Jacksonized
                 public class Test {
                   
                     private OffsetDateTime ts;
