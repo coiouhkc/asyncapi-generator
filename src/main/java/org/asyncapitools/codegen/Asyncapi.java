@@ -3,6 +3,7 @@ package org.asyncapitools.codegen;
 import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 @Builder(toBuilder = true)
 @Data
@@ -10,7 +11,7 @@ public class Asyncapi {
   private String version;
   private Info info;
   private Set<Server> servers;
-  private Channels channels;
+  private Set<Channel> channels;
   private Set<Component> components;
 
   @Builder(toBuilder = true)
@@ -31,16 +32,23 @@ public class Asyncapi {
 
   @Builder(toBuilder = true)
   @Data
-  public static class Channels {
+  public static class Channel {
     private String name;
-    private Channel subscribe;
-    private Channel publish;
+    private ChannelItem subscribe;
+    private ChannelItem publish;
+
+    public String getServiceName() {
+      return StringUtils.capitalize(name) + "Service";
+    }
+
+    public String getDelegateInterfaceName() {
+      return StringUtils.capitalize(name) + "DelegateI";
+    }
   }
 
   @Builder(toBuilder = true)
   @Data
-  public static class Channel {
-    private String name;
+  public static class ChannelItem {
     private String operationId;
     private KafkaChannelBinding kafkaChannelBinding;
     private Message message;
@@ -50,13 +58,19 @@ public class Asyncapi {
   @Data
   public static class KafkaChannelBinding {
     private String groupId;
-    private String key;
   }
 
   @Builder(toBuilder = true)
   @Data
   public static class Message {
     private Component payload;
+    private KafkaMessageBinding kafkaMessageBinding;
+  }
+
+  @Builder(toBuilder = true)
+  @Data
+  public static class KafkaMessageBinding {
+    private Component key;
   }
 
   @Builder(toBuilder = true)

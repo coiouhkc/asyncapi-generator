@@ -5,16 +5,15 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class Generator {
@@ -40,12 +39,21 @@ public class Generator {
         asyncapi.getComponents().stream()
             .map(component -> generateModel(handlebars, config, component))
             .collect(Collectors.toSet());
+
     // generate apis
+    Set<Pair<String, String>> apis =
+        asyncapi.getChannels().stream()
+            .flatMap(channel -> generateApi(handlebars, config, channel))
+            .collect(Collectors.toSet());
     // generate supporting files
 
     // write
     Map<String, String> filesWithContent = new HashMap<>();
-    models.forEach(stringStringPair -> filesWithContent.put(stringStringPair.getKey(), stringStringPair.getValue()));
+    Stream.of(models, apis)
+        .flatMap(Collection::stream)
+        .forEach(
+            stringStringPair ->
+                filesWithContent.put(stringStringPair.getKey(), stringStringPair.getValue()));
     writer.write(filesWithContent);
   }
 
@@ -64,5 +72,30 @@ public class Generator {
             + component.getName()
             + ".java",
         content);
+  }
+
+  @SneakyThrows
+  public Stream<Pair<String, String>> generateApi(
+      Handlebars handlebars, CodegenConfig config, Asyncapi.Channel channel) {
+    Template serviceTemplate = handlebars.compile("service");
+    Context serviceContext =
+        Context.newContext(channel).combine("package", config.getOutputPackage());
+    String serviceContent = serviceTemplate.apply(serviceContext);
+
+    Template delegateInterfaceTemplate = handlebars.compile("delegate-interface");
+    Context delegateInterfaceContext =
+        Context.newContext(channel).combine("package", config.getOutputPackage());
+    String delegateInterfaceContent = delegateInterfaceTemplate.apply(delegateInterfaceContext);
+
+    String serviceDir =
+        config.getPathToOutputDirectory()
+            + "src/gen/java/"
+            + config.getOutputPackage().replaceAll("\\.", "/")
+            + "/service/";
+
+    return Stream.of(
+        Pair.of(serviceDir + channel.getServiceName() + ".java", serviceContent),
+        Pair.of(
+            serviceDir + channel.getDelegateInterfaceName() + ".java", delegateInterfaceContent));
   }
 }

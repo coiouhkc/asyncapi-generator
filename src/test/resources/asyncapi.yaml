@@ -1,4 +1,4 @@
-asyncapi: '3.0.0'
+asyncapi: '2.6.0'
 info:
   title: Test API
   version: '1.0.0'
@@ -19,20 +19,26 @@ channels:
       bindings:
         kafka:
           groupId: in-group
-          key: TestKey
       operationId: read
       message:
         payload:
           $ref: "#/components/schemas/TestPayload"
+        bindings:
+          kafka:
+            key:
+              $ref: "#/components/schemas/TestKey"
     publish:
       bindings:
         kafka:
-          groupId: ou-group
-          key: TestKey
+          groupId: out-group
       operationId: write
       message:
         payload:
           $ref: "#/components/schemas/TestPayload"
+        bindings:
+          kafka:
+            key:
+              $ref: "#/components/schemas/TestKey"
 components:
   schemas:
     TestEmpty:
