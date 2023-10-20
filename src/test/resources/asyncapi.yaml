@@ -3,7 +3,7 @@ info:
   title: Test API
   version: '1.0.0'
   description: |
-    The Test API allows to test asyncapi generator, targeting 3.0.0 (next major)
+    The Test API allows to test asyncapi generator
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
