@@ -12,54 +12,61 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.28</lombok.version>
+        <jackson.version>2.15.2</jackson.version>
+        <handlebars.version>4.3.1</handlebars.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <junit-jupiter.version>5.9.3</junit-jupiter.version>
+        <assertj-core.version>3.24.2</assertj-core.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.28</version>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>
             <artifactId>handlebars</artifactId>
-            <version>4.3.1</version>
+            <version>${handlebars.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
+            <version>${commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.9.3</version>
+            <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.24.2</version>
+            <version>${assertj-core.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
