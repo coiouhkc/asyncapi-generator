@@ -1,9 +1,11 @@
 package org.asyncapitools.codegen;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
+@AllArgsConstructor
 @Builder(toBuilder = true)
 @Data
 public class CodegenConfig {
