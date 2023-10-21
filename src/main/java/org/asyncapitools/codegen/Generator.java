@@ -4,7 +4,10 @@ import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.github.jknack.handlebars.io.URLTemplateLoader;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,9 +34,10 @@ public class Generator {
     final Asyncapi asyncapi = parser.parse(config.getPathToSpec());
 
     // prepare template engine
-    TemplateLoader loader = new ClassPathTemplateLoader();
-    loader.setPrefix("/" + config.getLanguage() + "/libraries/" + config.getLibrary());
-    loader.setSuffix(".mustache");
+    URLTemplateLoader loader =
+        config.isTemplateInClasspath()
+            ? new ClassPathTemplateLoader(config.getTemplateDir(), ".mustache")
+            : new FileTemplateLoader(config.getTemplateDir(), ".mustache");
     Handlebars handlebars = new Handlebars(loader);
 
     // generate models

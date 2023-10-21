@@ -30,7 +30,8 @@ public class GeneratorJavaQuarkusTest {
             "target/generated-sources/asyncapi/",
             "org.acme",
             "Java",
-            "quarkus");
+            "quarkus",
+            null);
 
     TemplateLoader loader = new ClassPathTemplateLoader();
     loader.setPrefix("/" + "Java" + "/libraries/" + "quarkus");
