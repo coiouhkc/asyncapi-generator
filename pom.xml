@@ -24,7 +24,7 @@
 
 
         <maven-plugin-tools.version>3.9.0</maven-plugin-tools.version>
-        <maven-plugin-api.version>3.2.5</maven-plugin-api.version>
+        <maven-plugin-api.version>3.9.3</maven-plugin-api.version>
     </properties>
 
     <modules>
