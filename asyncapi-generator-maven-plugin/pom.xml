@@ -13,7 +13,6 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <maven-plugin-tools.version>3.9.0</maven-plugin-tools.version>
     </properties>
 
     <dependencyManagement>
@@ -30,7 +29,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin-api.version}</version>
             <scope>provided</scope>
         </dependency>
 
