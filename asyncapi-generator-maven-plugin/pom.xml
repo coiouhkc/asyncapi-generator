@@ -13,6 +13,7 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
+
     </properties>
 
     <dependencyManagement>
@@ -45,5 +46,18 @@
             <artifactId>asyncapi-generator-core</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>${maven-plugin-plugin.version}</version>
+                <configuration>
+                    <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
