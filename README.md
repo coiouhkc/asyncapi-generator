@@ -3,3 +3,5 @@
 # AsyncAPI Generator
 
 **Note:** for AsyncAPI 2.6.0.
+
+**Note:** work-in-progress!
