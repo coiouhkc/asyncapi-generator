@@ -48,10 +48,11 @@ public class Parser {
       return null;
     }
 
+    Map<String, Object> bindings = (Map<String, Object>) node.get("bindings");
     return new Asyncapi.ChannelItem(
         (String) node.get("operationId"),
         parseKafkaChannelBinding(
-            (Map<String, Object>) ((Map<String, Object>) node.get("bindings")).get("kafka")),
+            bindings != null ? (Map<String, Object>) bindings.get("kafka") : null),
         parseMessage((Map<String, Object>) node.get("message")));
   }
 

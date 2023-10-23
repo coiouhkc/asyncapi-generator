@@ -1,10 +1,10 @@
-package {{package}};
+package {{package}}.model;
 
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer;
 
 public class {{name}}Deserializer extends ObjectMapperDeserializer<{{name}}> {
 
-    public KeyDeserializer() {
+    public {{name}}Deserializer() {
         super({{name}}.class);
     }
 }

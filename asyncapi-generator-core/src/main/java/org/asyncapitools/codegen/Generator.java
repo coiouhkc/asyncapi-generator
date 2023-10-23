@@ -49,6 +49,7 @@ public class Generator {
     // generate apis
     Set<Pair<String, String>> apis =
         asyncapi.getChannels().stream()
+            .filter(channel -> channel.getSubscribe() != null)
             .flatMap(channel -> generateApi(handlebars, config, channel))
             .collect(Collectors.toSet());
     // generate supporting files

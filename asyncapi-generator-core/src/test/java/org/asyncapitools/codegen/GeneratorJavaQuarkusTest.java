@@ -88,12 +88,12 @@ public class GeneratorJavaQuarkusTest {
                 import lombok.Data;
                 import lombok.extern.jackson.Jacksonized;
 
-                @Builder(toBuilder = true)
+                @Builder
                 @Data
                 @Jacksonized
                 public class Test {
 
-                    private OffsetDateTime ts;
+                    private final OffsetDateTime ts;
 
                 }""");
   }
@@ -151,7 +151,7 @@ public class InoutService {
 
   @Incoming("inout")
   public void read(Record<TestKey, TestPayload> record) {
-    return delegate.read(record);
+    delegate.read(record);
   }
 }""");
 
@@ -172,7 +172,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 public interface InoutDelegateI {
-    public void read(Record<TestKey, TestPayload> record) {
+    default void read(Record<TestKey, TestPayload> record) {
         throw new RuntimeException("Not implemented!");
     }
 }""");

@@ -14,6 +14,6 @@ public class {{serviceName}} {
 
   @Incoming("{{name}}")
   public void {{subscribe.operationId}}(Record<{{subscribe.message.kafkaMessageBinding.key.name}}, {{subscribe.message.payload.name}}> record) {
-    return delegate.{{subscribe.operationId}}(record);
+    delegate.{{subscribe.operationId}}(record);
   }
 }
