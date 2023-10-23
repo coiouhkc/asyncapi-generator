@@ -5,3 +5,8 @@
 **Note:** for AsyncAPI 2.6.0.
 
 **Note:** work-in-progress!
+
+# Usage
+
+## Examples
+See https://github.com/coiouhkc/asyncapi-generator-examples
