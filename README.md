@@ -6,6 +6,8 @@
 
 **Note:** work-in-progress!
 
+**Note:** primary intended usage is the ability to constantly evolve the spec in the project as opposed to generating the project skeleton once.
+
 # Usage
 
 ## Examples
