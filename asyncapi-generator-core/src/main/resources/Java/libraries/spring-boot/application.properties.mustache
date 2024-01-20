@@ -1,0 +1,14 @@
+app.kafka.bootstrapAddress=localhost:9092
+
+{{#channels}}
+    {{#publish}}
+app.kafka.producer.{{name}}.bootstrapAddress=localhost:9092
+app.kafka.producer.{{name}}.default-topic={{name}}-topic
+    {{/publish}}
+
+    {{#subscribe}}
+app.kafka.consumer.{{name}}.bootstrapAddress=localhost:9092
+app.kafka.consumer.{{name}}.groupId={{name}}-consumer-group
+app.kafka.consumer.{{name}}.topic={{name}}-topic
+    {{/subscribe}}
+{{/channels}}

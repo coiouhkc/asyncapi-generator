@@ -1,0 +1,9 @@
+package {{package}}.service;
+
+import {{package}}.model.*;
+
+public interface {{delegateInterfaceName}} {
+    default void consume({{subscribe.message.payload.name}} record) {
+        throw new RuntimeException("Not implemented!");
+    }
+}

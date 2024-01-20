@@ -1,0 +1,96 @@
+package {{package}}.config;
+
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.*;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
+
+@EnableKafka
+@Configuration
+public class AsyncApiKafkaConfiguration {
+
+    @Value("${app.kafka.bootstrapAddress}")
+    private String bootstrapAddress;
+
+    // consumer
+
+{{#channels}}
+    {{#subscribe}}
+        // {{name}}
+
+        @Value("${app.kafka.consumer.{{name}}.bootstrapAddress}")
+        private String {{name}}ConsumerBootstrapAddress;
+
+        @Value("${app.kafka.consumer.{{name}}.groupId}")
+        private String {{name}}GroupId;
+
+        @Bean
+        @Qualifier("{{name}}")
+        public ConsumerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{in1}}ConsumerFactory() {
+            Map<String, Object> props = new HashMap<>();
+            props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, {{name}}ConsumerBootstrapAddress);
+            props.put(ConsumerConfig.GROUP_ID_CONFIG, {{name}}GroupId);
+            props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+            props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+            props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+            return new DefaultKafkaConsumerFactory<>(props);
+        }
+
+        @Bean
+        public ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{in1}}KafkaListenerContainerFactory() {
+            ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> factory =
+            new ConcurrentKafkaListenerContainerFactory<>();
+            factory.setConsumerFactory({{in1}}ConsumerFactory());
+            return factory;
+        }
+
+    {{/subscribe}}
+{{/channels}}
+
+
+
+    // producer
+
+{{#channels}}
+    {{#publish}}
+
+        // {{name}}
+
+        @Value("${app.kafka.consumer.{{name}}.bootstrapAddress}")
+        private String {{name}}ProducerBootstrapAddress;
+
+        @Value("${app.kafka.producer.{{name}}.default-topic}")
+        private String {{name}}DefaultTopic;
+
+        @Bean
+        public ProducerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}ProducerFactory() {
+            Map<String, Object> props = new HashMap<>();
+            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, {{name}}ProducerBootstrapAddress);
+            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+            return new DefaultKafkaProducerFactory<>(props);
+        }
+
+        @Bean
+        @Qualifier("out1")
+        public KafkaTemplate<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}KafkaTemplate() {
+            KafkaTemplate<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> kafkaTemplate = new KafkaTemplate<>(out1ProducerFactory());
+            kafkaTemplate.setDefaultTopic({{name}}DefaultTopic);
+            return kafkaTemplate;
+        }
+
+    {{/publish}}
+{{/channels}}
+
+}

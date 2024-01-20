@@ -6,6 +6,8 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.URLTemplateLoader;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,11 +74,21 @@ public class Generator {
     Template modelTemplate = handlebars.compile("model");
     String content = modelTemplate.apply(context);
 
-    Template serializerTemplate = handlebars.compile("serializer");
-    String serializerContent = serializerTemplate.apply(context);
+    String serializerContent = null;
+    try {
+      Template serializerTemplate = handlebars.compile("serializer");
+      serializerContent = serializerTemplate.apply(context);
+    } catch (FileNotFoundException fnfe) {
+      // do nothing, filter later
+    }
 
-    Template deserializerTemplate = handlebars.compile("deserializer");
-    String deserializerContent = deserializerTemplate.apply(context);
+    String deserializerContent = null;
+    try {
+      Template deserializerTemplate = handlebars.compile("deserializer");
+      deserializerContent = deserializerTemplate.apply(context);
+    } catch (FileNotFoundException fnfe) {
+      // do nothing, filter later
+    }
 
     String modelDir =
         config.getPathToOutputDirectory()
@@ -85,9 +97,10 @@ public class Generator {
             + "/model/";
 
     return Stream.of(
-        Pair.of(modelDir + component.getName() + ".java", content),
-        Pair.of(modelDir + component.getName() + "Serializer.java", serializerContent),
-        Pair.of(modelDir + component.getName() + "Deserializer.java", deserializerContent));
+            Pair.of(modelDir + component.getName() + ".java", content),
+            Pair.of(modelDir + component.getName() + "Serializer.java", serializerContent),
+            Pair.of(modelDir + component.getName() + "Deserializer.java", deserializerContent))
+        .filter(pair -> pair.getRight() != null);
   }
 
   @SneakyThrows

@@ -1,0 +1,20 @@
+package {{package}}.service;
+
+import {{package}}.model.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+@Service
+public class {{serviceName}} {
+    @Autowired
+    private {{delegateInterfaceName}} delegate;
+
+    @KafkaListener(
+        topics = "${app.kafka.consumer.{{name}}.topic}",
+        groupId = "${app.kafka.consumer.{{name}}.groupId}")
+    public void consume({{subscribe.message.payload.name}} record) {
+        delegate.consume(message);
+    }
+}
