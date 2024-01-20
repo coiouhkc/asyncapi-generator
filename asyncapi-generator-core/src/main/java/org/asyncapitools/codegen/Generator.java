@@ -5,9 +5,7 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
-import com.github.jknack.handlebars.io.TemplateLoader;
-
-import java.io.File;
+import com.github.jknack.handlebars.io.URLTemplateLoader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,10 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.github.jknack.handlebars.io.URLTemplateLoader;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class Generator {
@@ -52,11 +47,16 @@ public class Generator {
             .filter(channel -> channel.getSubscribe() != null)
             .flatMap(channel -> generateApi(handlebars, config, channel))
             .collect(Collectors.toSet());
+
     // generate supporting files
+    Set<Pair<String, String>> supportingFiles =
+        Stream.of("application.properties")
+            .flatMap(s -> generateSupportingFile(handlebars, config, asyncapi, s))
+            .collect(Collectors.toSet());
 
     // write
     Map<String, String> filesWithContent = new HashMap<>();
-    Stream.of(models, apis)
+    Stream.of(models, apis, supportingFiles)
         .flatMap(Collection::stream)
         .forEach(
             stringStringPair ->
@@ -111,5 +111,23 @@ public class Generator {
         Pair.of(serviceDir + channel.getServiceName() + ".java", serviceContent),
         Pair.of(
             serviceDir + channel.getDelegateInterfaceName() + ".java", delegateInterfaceContent));
+  }
+
+  @SneakyThrows
+  public Stream<Pair<String, String>> generateSupportingFile(
+      Handlebars handlebars, CodegenConfig config, Asyncapi asyncapi, String fileName) {
+
+    Context context = Context.newContext(asyncapi).combine("package", config.getOutputPackage());
+
+    Template template = handlebars.compile(fileName);
+    String content = template.apply(context);
+
+    String dir =
+        config.getPathToOutputDirectory()
+            + "src/gen/java/"
+            + config.getOutputPackage().replaceAll("\\.", "/")
+            + "/";
+
+    return Stream.of(Pair.of(dir + fileName, content));
   }
 }

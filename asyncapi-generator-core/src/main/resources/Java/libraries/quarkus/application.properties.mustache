@@ -1,0 +1,15 @@
+{{#channels}}
+    {{#publish}}
+mp.messaging.incoming.{{name}}.connector=smallrye-kafka
+mp.messaging.incoming.{{name}}.topic={{name}}
+mp.messaging.incoming.{{name}}.key.deserializer={{package}}.model.TestKeyDeserializer
+mp.messaging.incoming.{{name}}.value.deserializer={{package}}.model.TestPayloadDeserializer
+    {{/publish}}
+
+    {{#subscribe}}
+mp.messaging.outgoing.{{name}}.connector=smallrye-kafka
+mp.messaging.outgoing.{{name}}.topic={{name}}
+mp.messaging.outgoing.{{name}}.key.serializer={{package}}.model.TestKeySerializer
+mp.messaging.outgoing.{{name}}.value.serializer={{package}}.model.TestPayloadSerializer
+    {{/subscribe}}
+{{/channels}}
