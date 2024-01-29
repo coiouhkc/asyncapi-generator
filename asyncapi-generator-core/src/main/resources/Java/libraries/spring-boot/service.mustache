@@ -12,9 +12,10 @@ public class {{serviceName}} {
     private {{delegateInterfaceName}} delegate;
 
     @KafkaListener(
+        containerFactory = "{{name}}KafkaListenerContainerFactory",
         topics = "${app.kafka.consumer.{{name}}.topic}",
         groupId = "${app.kafka.consumer.{{name}}.groupId}")
-    public void consume({{subscribe.message.payload.name}} record) {
-        delegate.consume(message);
+    public void consume({{subscribe.message.payload.name}} payload) {
+        delegate.consume(payload);
     }
 }

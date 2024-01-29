@@ -37,6 +37,12 @@ public class Generator {
             : new FileTemplateLoader(config.getTemplateDir(), ".mustache");
     Handlebars handlebars = new Handlebars(loader);
 
+    // generate config
+    Set<Pair<String, String>> configs =
+        Stream.of("")
+            .flatMap(s -> generateConfig(handlebars, config, asyncapi, s))
+            .collect(Collectors.toSet());
+
     // generate models
     Set<Pair<String, String>> models =
         asyncapi.getComponents().stream()
@@ -58,12 +64,34 @@ public class Generator {
 
     // write
     Map<String, String> filesWithContent = new HashMap<>();
-    Stream.of(models, apis, supportingFiles)
+    Stream.of(configs, models, apis, supportingFiles)
         .flatMap(Collection::stream)
         .forEach(
             stringStringPair ->
                 filesWithContent.put(stringStringPair.getKey(), stringStringPair.getValue()));
     writer.write(filesWithContent);
+  }
+
+  @SneakyThrows
+  public Stream<Pair<String, String>> generateConfig(
+      Handlebars handlebars, CodegenConfig config, Asyncapi asyncapi, String s) {
+    Context context = Context.newContext(asyncapi).combine("package", config.getOutputPackage());
+
+    try {
+      Template configTemplate = handlebars.compile("configuration");
+
+      String configurationContent = configTemplate.apply(context);
+
+      String configDir =
+          config.getPathToOutputDirectory()
+              + "src/gen/java/"
+              + config.getOutputPackage().replaceAll("\\.", "/")
+              + "/config/";
+
+      return Stream.of(Pair.of(configDir + "AsyncApiKafkaConfiguration" + ".java", configurationContent));
+    } catch (IOException e) {
+      return Stream.empty();
+    }
   }
 
   @SneakyThrows

@@ -1,5 +1,7 @@
 package {{package}}.config;
 
+import {{package}}.model.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -20,7 +22,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 @Configuration
 public class AsyncApiKafkaConfiguration {
 
-    @Value("${app.kafka.bootstrapAddress}")
+    @Value("${app.kafka.bootstrap-address}")
     private String bootstrapAddress;
 
     // consumer
@@ -29,29 +31,29 @@ public class AsyncApiKafkaConfiguration {
     {{#subscribe}}
         // {{name}}
 
-        @Value("${app.kafka.consumer.{{name}}.bootstrapAddress}")
+        @Value("${app.kafka.consumer.{{name}}.bootstrap-address}")
         private String {{name}}ConsumerBootstrapAddress;
 
         @Value("${app.kafka.consumer.{{name}}.groupId}")
         private String {{name}}GroupId;
 
         @Bean
-        @Qualifier("{{name}}")
-        public ConsumerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{in1}}ConsumerFactory() {
+        public ConsumerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}ConsumerFactory() {
             Map<String, Object> props = new HashMap<>();
             props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, {{name}}ConsumerBootstrapAddress);
             props.put(ConsumerConfig.GROUP_ID_CONFIG, {{name}}GroupId);
             props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
             props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+            props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
             props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
             return new DefaultKafkaConsumerFactory<>(props);
         }
 
         @Bean
-        public ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{in1}}KafkaListenerContainerFactory() {
+        public ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}KafkaListenerContainerFactory() {
             ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> factory =
             new ConcurrentKafkaListenerContainerFactory<>();
-            factory.setConsumerFactory({{in1}}ConsumerFactory());
+            factory.setConsumerFactory({{name}}ConsumerFactory());
             return factory;
         }
 
@@ -67,7 +69,7 @@ public class AsyncApiKafkaConfiguration {
 
         // {{name}}
 
-        @Value("${app.kafka.consumer.{{name}}.bootstrapAddress}")
+        @Value("${app.kafka.producer.{{name}}.bootstrap-address}")
         private String {{name}}ProducerBootstrapAddress;
 
         @Value("${app.kafka.producer.{{name}}.default-topic}")
@@ -83,9 +85,9 @@ public class AsyncApiKafkaConfiguration {
         }
 
         @Bean
-        @Qualifier("out1")
+        @Qualifier("{{name}}")
         public KafkaTemplate<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}KafkaTemplate() {
-            KafkaTemplate<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> kafkaTemplate = new KafkaTemplate<>(out1ProducerFactory());
+            KafkaTemplate<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> kafkaTemplate = new KafkaTemplate<>({{name}}ProducerFactory());
             kafkaTemplate.setDefaultTopic({{name}}DefaultTopic);
             return kafkaTemplate;
         }
