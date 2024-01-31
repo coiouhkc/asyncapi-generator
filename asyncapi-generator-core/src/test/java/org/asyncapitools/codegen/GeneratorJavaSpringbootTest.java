@@ -148,10 +148,11 @@ package org.acme.service;
      private InoutDelegateI delegate;
 
      @KafkaListener(
+         containerFactory = "inoutKafkaListenerContainerFactory",
          topics = "${app.kafka.consumer.inout.topic}",
          groupId = "${app.kafka.consumer.inout.groupId}")
-     public void consume( record) {
-         delegate.consume(message);
+     public void consume(TestPayload payload) {
+         delegate.consume(payload);
      }
  }""");
 
@@ -166,7 +167,7 @@ package org.acme.service;
 import org.acme.model.*;
 
 public interface InoutDelegateI {
-    default void consume(TestPayload record) {
+    default void consume(TestPayload payload) {
         throw new RuntimeException("Not implemented!");
     }
 }""");

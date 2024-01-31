@@ -38,7 +38,7 @@ public class AsyncApiKafkaConfiguration {
         private String {{name}}GroupId;
 
         @Bean
-        public ConsumerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}ConsumerFactory() {
+        public ConsumerFactory<{{message.kafkaMessageBinding.key.javaDataType}}, {{message.payload.javaDataType}}> {{name}}ConsumerFactory() {
             Map<String, Object> props = new HashMap<>();
             props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, {{name}}ConsumerBootstrapAddress);
             props.put(ConsumerConfig.GROUP_ID_CONFIG, {{name}}GroupId);
@@ -50,8 +50,8 @@ public class AsyncApiKafkaConfiguration {
         }
 
         @Bean
-        public ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}KafkaListenerContainerFactory() {
-            ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> factory =
+        public ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.javaDataType}}, {{message.payload.javaDataType}}> {{name}}KafkaListenerContainerFactory() {
+            ConcurrentKafkaListenerContainerFactory<{{message.kafkaMessageBinding.key.javaDataType}}, {{message.payload.javaDataType}}> factory =
             new ConcurrentKafkaListenerContainerFactory<>();
             factory.setConsumerFactory({{name}}ConsumerFactory());
             return factory;
@@ -76,7 +76,7 @@ public class AsyncApiKafkaConfiguration {
         private String {{name}}DefaultTopic;
 
         @Bean
-        public ProducerFactory<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}ProducerFactory() {
+        public ProducerFactory<{{message.kafkaMessageBinding.key.javaDataType}}, {{message.payload.javaDataType}}> {{name}}ProducerFactory() {
             Map<String, Object> props = new HashMap<>();
             props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, {{name}}ProducerBootstrapAddress);
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
@@ -86,8 +86,8 @@ public class AsyncApiKafkaConfiguration {
 
         @Bean
         @Qualifier("{{name}}")
-        public KafkaTemplate<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> {{name}}KafkaTemplate() {
-            KafkaTemplate<{{message.kafkaMessageBinding.key.name}}, {{message.payload.name}}> kafkaTemplate = new KafkaTemplate<>({{name}}ProducerFactory());
+        public KafkaTemplate<{{message.kafkaMessageBinding.key.javaDataType}}, {{message.payload.javaDataType}}> {{name}}KafkaTemplate() {
+            KafkaTemplate<{{message.kafkaMessageBinding.key.javaDataType}}, {{message.payload.javaDataType}}> kafkaTemplate = new KafkaTemplate<>({{name}}ProducerFactory());
             kafkaTemplate.setDefaultTopic({{name}}DefaultTopic);
             return kafkaTemplate;
         }

@@ -46,6 +46,7 @@ public class Generator {
     // generate models
     Set<Pair<String, String>> models =
         asyncapi.getComponents().stream()
+            .filter(component -> component.getName() != null)
             .flatMap(component -> generateModel(handlebars, config, component))
             .collect(Collectors.toSet());
 
@@ -88,7 +89,8 @@ public class Generator {
               + config.getOutputPackage().replaceAll("\\.", "/")
               + "/config/";
 
-      return Stream.of(Pair.of(configDir + "AsyncApiKafkaConfiguration" + ".java", configurationContent));
+      return Stream.of(
+          Pair.of(configDir + "AsyncApiKafkaConfiguration" + ".java", configurationContent));
     } catch (IOException e) {
       return Stream.empty();
     }

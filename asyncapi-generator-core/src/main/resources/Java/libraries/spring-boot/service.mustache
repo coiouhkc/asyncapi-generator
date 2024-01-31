@@ -15,7 +15,7 @@ public class {{serviceName}} {
         containerFactory = "{{name}}KafkaListenerContainerFactory",
         topics = "${app.kafka.consumer.{{name}}.topic}",
         groupId = "${app.kafka.consumer.{{name}}.groupId}")
-    public void consume({{subscribe.message.payload.name}} payload) {
+    public void consume({{subscribe.message.payload.javaDataType}} payload) {
         delegate.consume(payload);
     }
 }

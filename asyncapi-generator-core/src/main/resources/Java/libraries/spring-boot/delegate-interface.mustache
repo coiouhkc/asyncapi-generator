@@ -3,7 +3,7 @@ package {{package}}.service;
 import {{package}}.model.*;
 
 public interface {{delegateInterfaceName}} {
-    default void consume({{subscribe.message.payload.name}} record) {
+    default void consume({{subscribe.message.payload.javaDataType}} payload) {
         throw new RuntimeException("Not implemented!");
     }
 }

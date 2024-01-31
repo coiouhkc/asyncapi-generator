@@ -79,6 +79,11 @@ public class Asyncapi {
     private String fqdn;
     private String name;
     private Set<Property> properties;
+
+    public String getJavaDataType() {
+      // either a real object or an alias for a type
+      return name != null ? name : properties.stream().toList().get(0).getJavaDataType();
+    }
   }
 
   @Builder(toBuilder = true)
@@ -95,12 +100,18 @@ public class Asyncapi {
             return "String";
           } else {
             switch (format) {
-              case "date": return "Date";
-              case "date-time": return "OffsetDateTime";
-              case "password": return "String";
-              case "byte": return "String";
-              case "binary": return "File";
-              case "uuid": return "UUID";
+              case "date":
+                return "Date";
+              case "date-time":
+                return "OffsetDateTime";
+              case "password":
+                return "String";
+              case "byte":
+                return "String";
+              case "binary":
+                return "File";
+              case "uuid":
+                return "UUID";
             }
           }
         case "boolean":

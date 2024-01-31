@@ -14,7 +14,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <lombok.version>1.18.28</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <jackson.version>2.15.2</jackson.version>
         <handlebars.version>4.3.1</handlebars.version>
         <commons-io.version>2.11.0</commons-io.version>

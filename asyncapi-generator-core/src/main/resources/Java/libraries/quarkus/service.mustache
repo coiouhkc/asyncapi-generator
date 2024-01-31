@@ -13,7 +13,7 @@ public class {{serviceName}} {
   @Inject {{delegateInterfaceName}} delegate;
 
   @Incoming("{{name}}")
-  public void {{subscribe.operationId}}(Record<{{subscribe.message.kafkaMessageBinding.key.name}}, {{subscribe.message.payload.name}}> record) {
+  public void {{subscribe.operationId}}(Record<{{subscribe.message.kafkaMessageBinding.key.javaDataType}}, {{subscribe.message.payload.javaDataType}}> record) {
     delegate.{{subscribe.operationId}}(record);
   }
 }
