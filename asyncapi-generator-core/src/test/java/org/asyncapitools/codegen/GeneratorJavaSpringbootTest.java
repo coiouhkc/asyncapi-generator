@@ -65,6 +65,8 @@ public class GeneratorJavaSpringbootTest {
         .isEqualToIgnoringWhitespace(
             """
                 package org.acme.model;
+                
+                import java.math.BigDecimal;
 
                 import java.util.List;
                 import java.util.Map;

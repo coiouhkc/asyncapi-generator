@@ -117,9 +117,18 @@ public class Asyncapi {
         case "boolean":
           return "Boolean";
         case "number":
-          return "Integer";
+          return "BigDecimal";
         case "integer":
-          return "Integer";
+          if (format == null) {
+            return "Integer";
+          } else {
+            switch (format) {
+              case "int64":
+                return "Long";
+              case "int32":
+                return "Integer";
+            }
+          }
         case "array":
           return "List";
         case "object":

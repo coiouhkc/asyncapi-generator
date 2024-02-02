@@ -66,6 +66,8 @@ public class GeneratorJavaQuarkusTest {
         .isEqualToIgnoringWhitespace(
             """
                 package org.acme.model;
+                
+                import java.math.BigDecimal;
 
                 import java.util.List;
                 import java.util.Map;

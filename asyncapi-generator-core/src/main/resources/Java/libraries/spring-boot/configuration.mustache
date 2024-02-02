@@ -75,12 +75,25 @@ public class AsyncApiKafkaConfiguration {
         @Value("${app.kafka.producer.{{name}}.default-topic}")
         private String {{name}}DefaultTopic;
 
+        @Value("${app.kafka.producer.{{name}}.security.protocol:#{null}}")
+        private String {{name}}SecurityProtocol;
+
+        @Value("${app.kafka.producer.{{name}}.security.sasl.mechanism:#{null}}")
+        private String {{name}}SecuritySaslMechanism;
+
+        @Value("${app.kafka.producer.{{name}}.key.serializerclass:#{null}}")
+        private String {{name}}KeySerializerClass;
+
         @Bean
         public ProducerFactory<{{message.kafkaMessageBinding.key.javaDataType}}, {{message.payload.javaDataType}}> {{name}}ProducerFactory() {
             Map<String, Object> props = new HashMap<>();
             props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, {{name}}ProducerBootstrapAddress);
-            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, {{name}}KeySerializerClass != null ? {{name}}KeySerializerClass : JsonSerializer.class);
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+            if ({{name}}SecurityProtocol != null || {{name}}SecuritySaslMechanism != null) {
+                props.put("sasl.mechanism", {{name}}SecuritySaslMechanism);
+                props.put("security.protocol", {{name}}SecurityProtocol);
+            }
             return new DefaultKafkaProducerFactory<>(props);
         }
 
