@@ -65,7 +65,7 @@ public class GeneratorJavaSpringbootTest {
         .isEqualToIgnoringWhitespace(
             """
                 package org.acme.model;
-                
+
                 import java.math.BigDecimal;
 
                 import java.util.List;
@@ -110,7 +110,7 @@ public class GeneratorJavaSpringbootTest {
                     "inout",
                     new Asyncapi.ChannelItem(
                         "read",
-                        new Asyncapi.KafkaChannelBinding("in-group"),
+                        new Asyncapi.KafkaChannelItemBinding("in-group"),
                         new Asyncapi.Message(
                             new Asyncapi.Component(
                                 "#/components/schemas/TestPayload", "TestPayload", null),
@@ -119,13 +119,14 @@ public class GeneratorJavaSpringbootTest {
                                     "#/components/schemas/TestKey", "TestKey", null)))),
                     new Asyncapi.ChannelItem(
                         "write",
-                        new Asyncapi.KafkaChannelBinding("out-group"),
+                        new Asyncapi.KafkaChannelItemBinding("out-group"),
                         new Asyncapi.Message(
                             new Asyncapi.Component(
                                 "#/components/schemas/TestPayload", "TestPayload", null),
                             new Asyncapi.KafkaMessageBinding(
                                 new Asyncapi.Component(
-                                    "#/components/schemas/TestKey", "TestKey", null))))))
+                                    "#/components/schemas/TestKey", "TestKey", null)))),
+                    null))
             .collect(Collectors.toList());
 
     assertThat(apis).isNotNull();
@@ -169,7 +170,7 @@ package org.acme.service;
 import org.acme.model.*;
 
 public interface InoutDelegateI {
-    default void consume(TestPayload payload) {
+   default void consume(TestPayload payload) {
         throw new RuntimeException("Not implemented!");
     }
 }""");

@@ -36,6 +36,7 @@ public class Asyncapi {
     private String name;
     private ChannelItem subscribe;
     private ChannelItem publish;
+    private KafkaChannelBinding kafkaChannelBinding;
 
     public String getServiceName() {
       return StringUtils.capitalize(name) + "Service";
@@ -48,15 +49,34 @@ public class Asyncapi {
 
   @Builder(toBuilder = true)
   @Data
+  public static class KafkaChannelBinding {
+    private String topic;
+    private int partitions;
+    private int replicas;
+    private TopicConfiguration topicConfiguration;
+  }
+
+  @Builder(toBuilder = true)
+  @Data
+  public static class TopicConfiguration {
+    private Set<String> cleanupPolicy;
+    private long retentionMs;
+    private long retentionBytes;
+    private long deleteRetentionMs;
+    private long maxMessageBytes;
+  }
+
+  @Builder(toBuilder = true)
+  @Data
   public static class ChannelItem {
     private String operationId;
-    private KafkaChannelBinding kafkaChannelBinding;
+    private KafkaChannelItemBinding kafkaChannelItemBinding;
     private Message message;
   }
 
   @Builder(toBuilder = true)
   @Data
-  public static class KafkaChannelBinding {
+  public static class KafkaChannelItemBinding {
     private String groupId;
   }
 

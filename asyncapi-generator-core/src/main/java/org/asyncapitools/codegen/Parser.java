@@ -5,10 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,10 +71,13 @@ public class Parser {
   }
 
   private Asyncapi.Channel parseChannel(String key, Map<String, Object> node) {
+    Map<String, Object> bindings = (Map<String, Object>) node.get("bindings");
     return new Asyncapi.Channel(
         key,
         parseChannelItem((Map<String, Object>) node.get("subscribe")),
-        parseChannelItem((Map<String, Object>) node.get("publish")));
+        parseChannelItem((Map<String, Object>) node.get("publish")),
+        parseKafkaChannelBinding(
+            bindings != null ? (Map<String, Object>) bindings.get("kafka") : null));
   }
 
   private Asyncapi.ChannelItem parseChannelItem(Map<String, Object> node) {
@@ -88,7 +88,7 @@ public class Parser {
     Map<String, Object> bindings = (Map<String, Object>) node.get("bindings");
     return new Asyncapi.ChannelItem(
         (String) node.get("operationId"),
-        parseKafkaChannelBinding(
+        parseKafkaChannelItemBinding(
             bindings != null ? (Map<String, Object>) bindings.get("kafka") : null),
         parseMessage((Map<String, Object>) node.get("message")));
   }
@@ -97,7 +97,31 @@ public class Parser {
     if (node == null) {
       return null;
     }
-    return new Asyncapi.KafkaChannelBinding((String) node.get("groupId"));
+    return new Asyncapi.KafkaChannelBinding(
+        (String) node.get("topic"),
+        (Integer) node.get("partitions"),
+        (Integer) node.get("replicas"),
+        parseTopicConfiguration((Map<String, Object>) node.get("topicConfiguration")));
+  }
+
+  private Asyncapi.TopicConfiguration parseTopicConfiguration(Map<String, Object> node) {
+    if (node == null) {
+      return null;
+    }
+
+    return new Asyncapi.TopicConfiguration(
+        new HashSet<>((List<String>) node.get("cleanup.policy")),
+        (Integer) node.get("retention.ms"),
+        (Integer) node.get("retention.bytes"),
+        (Integer) node.get("delete.retention.ms"),
+        (Integer) node.get("max.message.bytes"));
+  }
+
+  private Asyncapi.KafkaChannelItemBinding parseKafkaChannelItemBinding(Map<String, Object> node) {
+    if (node == null) {
+      return null;
+    }
+    return new Asyncapi.KafkaChannelItemBinding((String) node.get("groupId"));
   }
 
   private Asyncapi.Message parseMessage(Map<String, Object> node) {

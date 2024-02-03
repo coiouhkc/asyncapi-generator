@@ -24,22 +24,25 @@ public class ParserTest {
         new Asyncapi.Component(
             "#/components/schemas/TestPayload",
             "TestPayload",
-            Set.of(new Asyncapi.Property("prop1", "integer", null),
-                    new Asyncapi.Property("prop2", "string", "date-time"),
-                    new Asyncapi.Property("prop3", "number", "double"),
-                    new Asyncapi.Property("prop4", "string", null)));
+            Set.of(
+                new Asyncapi.Property("prop1", "integer", null),
+                new Asyncapi.Property("prop2", "string", "date-time"),
+                new Asyncapi.Property("prop3", "number", "double"),
+                new Asyncapi.Property("prop4", "string", null)));
     assertThat(asyncapi.getChannels())
         .contains(
             new Asyncapi.Channel(
                 "inout",
                 new Asyncapi.ChannelItem(
                     "read",
-                    new Asyncapi.KafkaChannelBinding("in-group"),
+                    new Asyncapi.KafkaChannelItemBinding("in-group"),
                     new Asyncapi.Message(testPayload, new Asyncapi.KafkaMessageBinding(testKey))),
                 new Asyncapi.ChannelItem(
                     "write",
-                    new Asyncapi.KafkaChannelBinding("out-group"),
-                    new Asyncapi.Message(testPayload, new Asyncapi.KafkaMessageBinding(testKey)))));
+                    new Asyncapi.KafkaChannelItemBinding("out-group"),
+                    new Asyncapi.Message(testPayload, new Asyncapi.KafkaMessageBinding(testKey))),
+                new Asyncapi.KafkaChannelBinding(
+                    "my-specific-topic-name", 20, 3, new Asyncapi.TopicConfiguration(Set.of("compact", "delete"), 604800000, 1000000000, 86400000, 1048588))));
     assertThat(asyncapi.getComponents()).hasSize(3);
     assertThat(asyncapi.getComponents())
         .contains(new Asyncapi.Component("#/components/schemas/TestEmpty", "TestEmpty", Set.of()));
