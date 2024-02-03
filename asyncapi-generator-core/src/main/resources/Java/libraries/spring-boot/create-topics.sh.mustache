@@ -1,0 +1,5 @@
+{{#channels}}
+    {{#kafkaChannelBinding}}
+        bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --if-not-exists --topic {{topic}} --partitions {{partitions}} --replication-factor {{replicas}}
+    {{/kafkaChannelBinding}}
+{{/channels}}

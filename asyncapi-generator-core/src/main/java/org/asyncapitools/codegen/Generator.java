@@ -59,7 +59,7 @@ public class Generator {
 
     // generate supporting files
     Set<Pair<String, String>> supportingFiles =
-        Stream.of("application.properties")
+        Stream.of("application.properties", "create-topics.sh")
             .flatMap(s -> generateSupportingFile(handlebars, config, asyncapi, s))
             .collect(Collectors.toSet());
 
@@ -162,8 +162,14 @@ public class Generator {
 
     Context context = Context.newContext(asyncapi).combine("package", config.getOutputPackage());
 
-    Template template = handlebars.compile(fileName);
-    String content = template.apply(context);
+    String content = null;
+
+    try {
+      Template template = handlebars.compile(fileName);
+      content = template.apply(context);
+    } catch (FileNotFoundException fnfe) {
+      // do nothing, filter later
+    }
 
     String dir =
         config.getPathToOutputDirectory()
