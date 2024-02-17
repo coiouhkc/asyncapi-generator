@@ -126,7 +126,7 @@ public class GeneratorJavaSpringbootTest {
                             new Asyncapi.KafkaMessageBinding(
                                 new Asyncapi.Component(
                                     "#/components/schemas/TestKey", "TestKey", null)))),
-                    null))
+                    new Asyncapi.KafkaChannelBinding("inout-topic", 1, 2, null)))
             .collect(Collectors.toList());
 
     assertThat(apis).isNotNull();
@@ -139,25 +139,25 @@ public class GeneratorJavaSpringbootTest {
             """
 package org.acme.service;
 
- import org.acme.model.*;
+import org.acme.model.*;
 
- import org.springframework.beans.factory.annotation.Autowired;
- import org.springframework.kafka.annotation.KafkaListener;
- import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
 
- @Service
- public class InoutService {
-     @Autowired
-     private InoutDelegateI delegate;
+@Service
+public class InoutService {
+    @Autowired
+    private InoutDelegateI delegate;
 
-     @KafkaListener(
-         containerFactory = "inoutKafkaListenerContainerFactory",
-         topics = "${app.kafka.consumer.inout.topic}",
-         groupId = "${app.kafka.consumer.inout.groupId}")
-     public void consume(TestPayload payload) {
-         delegate.consume(payload);
-     }
- }""");
+    @KafkaListener(
+        containerFactory = "inoutKafkaListenerContainerFactory",
+        topics = "${app.kafka.consumer.inout.topic:inout-topic }",
+        groupId = "${app.kafka.consumer.inout.groupId:in-group }")
+    public void consume(TestPayload payload) {
+        delegate.consume(payload);
+    }
+}""");
 
     assertThat(apis.get(1).getKey())
         .isEqualTo(
