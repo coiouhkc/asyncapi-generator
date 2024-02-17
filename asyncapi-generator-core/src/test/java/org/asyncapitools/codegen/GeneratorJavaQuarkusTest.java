@@ -180,4 +180,72 @@ public interface InoutDelegateI {
     }
 }""");
   }
+
+  @Test
+  void generateSupportingFilesApplicationProperties() {
+    List<Pair<String, String>> apis =
+        generator
+            .generateSupportingFile(
+                handlebars,
+                config,
+                new Asyncapi(
+                    null,
+                    null,
+                    null,
+                    Set.of(
+                        new Asyncapi.Channel(
+                            "inout",
+                            new Asyncapi.ChannelItem(
+                                "read",
+                                new Asyncapi.KafkaChannelItemBinding("in-group"),
+                                new Asyncapi.Message(
+                                    new Asyncapi.Component(
+                                        "#/components/schemas/TestPayload", "TestPayload", null),
+                                    new Asyncapi.KafkaMessageBinding(
+                                        new Asyncapi.Component(
+                                            "#/components/schemas/TestKey", "TestKey", null)))),
+                            new Asyncapi.ChannelItem(
+                                "write",
+                                new Asyncapi.KafkaChannelItemBinding("out-group"),
+                                new Asyncapi.Message(
+                                    new Asyncapi.Component(
+                                        "#/components/schemas/TestPayload", "TestPayload", null),
+                                    new Asyncapi.KafkaMessageBinding(
+                                        new Asyncapi.Component(
+                                            "#/components/schemas/TestKey", "TestKey", null)))),
+                            new Asyncapi.KafkaChannelBinding("inout-topic", 1, 2, null))),
+                    Set.of()),
+                "application.properties")
+            .collect(Collectors.toList());
+
+    assertThat(apis).isNotNull();
+    assertThat(apis).hasSize(1);
+    assertThat(apis.get(0).getKey())
+        .isEqualTo(
+            "target/generated-sources/asyncapi/src/gen/java/org/acme/application.properties");
+    assertThat(apis.get(0).getValue())
+        .isEqualToIgnoringWhitespace(
+            """
+    
+mp.messaging.incoming.inout.connector=smallrye-kafka
+mp.messaging.incoming.inout.topic=inout-topic
+mp.messaging.incoming.inout.key.deserializer=org.acme.model.TestKeyDeserializer
+mp.messaging.incoming.inout.value.deserializer=org.acme.model.TestPayloadDeserializer
+mp.messaging.incoming.inout.group.id=out-group
+mp.messaging.incoming.inout.partitions=1
+
+
+
+
+
+    
+
+    
+mp.messaging.outgoing.inout.connector=smallrye-kafka
+mp.messaging.outgoing.inout.topic=inout
+mp.messaging.outgoing.inout.key.serializer=org.acme.model.TestKeySerializer
+mp.messaging.outgoing.inout.value.serializer=org.acme.model.TestPayloadSerializer
+    
+""");
+  }
 }

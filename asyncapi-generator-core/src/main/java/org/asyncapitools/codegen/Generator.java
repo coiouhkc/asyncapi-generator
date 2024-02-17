@@ -40,7 +40,7 @@ public class Generator {
     // generate config
     Set<Pair<String, String>> configs =
         Stream.of("")
-            .flatMap(s -> generateConfig(handlebars, config, asyncapi, s))
+            .flatMap(s -> generateConfig(handlebars, config, asyncapi))
             .collect(Collectors.toSet());
 
     // generate models
@@ -75,7 +75,7 @@ public class Generator {
 
   @SneakyThrows
   public Stream<Pair<String, String>> generateConfig(
-      Handlebars handlebars, CodegenConfig config, Asyncapi asyncapi, String s) {
+      Handlebars handlebars, CodegenConfig config, Asyncapi asyncapi) {
     Context context = Context.newContext(asyncapi).combine("package", config.getOutputPackage());
 
     try {

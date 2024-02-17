@@ -1,15 +1,22 @@
 {{#channels}}
     {{#publish}}
 mp.messaging.incoming.{{name}}.connector=smallrye-kafka
-mp.messaging.incoming.{{name}}.topic={{name}}
-mp.messaging.incoming.{{name}}.key.deserializer={{package}}.model.TestKeyDeserializer
-mp.messaging.incoming.{{name}}.value.deserializer={{package}}.model.TestPayloadDeserializer
+mp.messaging.incoming.{{name}}.topic={{kafkaChannelBinding.topic}}
+mp.messaging.incoming.{{name}}.key.deserializer={{package}}.model.{{message.kafkaMessageBinding.key.name}}Deserializer
+mp.messaging.incoming.{{name}}.value.deserializer={{package}}.model.{{message.payload.name}}Deserializer
+{{#kafkaChannelItemBinding.groupId}}mp.messaging.incoming.{{name}}.group.id={{kafkaChannelItemBinding.groupId}}{{/kafkaChannelItemBinding.groupId}}
+{{#kafkaChannelBinding.partitions}}mp.messaging.incoming.{{name}}.partitions={{kafkaChannelBinding.partitions}}{{/kafkaChannelBinding.partitions}}
+{{#kafkaChannelBinding.topicConfiguration.cleanupPolicy}}mp.messaging.incoming.{{name}}.cleanup.policy={{kafkaChannelBinding.topicConfiguration.cleanupPolicy}}{{/kafkaChannelBinding.topicConfiguration.cleanupPolicy}}
+{{#kafkaChannelBinding.topicConfiguration.retentionMs}}mp.messaging.incoming.{{name}}.retention.ms={{kafkaChannelBinding.topicConfiguration.retentionMs}}{{/kafkaChannelBinding.topicConfiguration.retentionMs}}
+{{#kafkaChannelBinding.topicConfiguration.retentionBytes}}mp.messaging.incoming.{{name}}.retention.bytes={{kafkaChannelBinding.topicConfiguration.retentionBytes}}{{/kafkaChannelBinding.topicConfiguration.retentionBytes}}
+{{#kafkaChannelBinding.topicConfiguration.deleteRetentionMs}}mp.messaging.incoming.{{name}}.delete.retention.ms={{kafkaChannelBinding.topicConfiguration.deleteRetentionMs}}{{/kafkaChannelBinding.topicConfiguration.deleteRetentionMs}}
+{{#kafkaChannelBinding.topicConfiguration.maxMessageBytes}}mp.messaging.incoming.{{name}}.max.message.bytes={{kafkaChannelBinding.topicConfiguration.maxMessageBytes}}{{/kafkaChannelBinding.topicConfiguration.maxMessageBytes}}
     {{/publish}}
 
     {{#subscribe}}
 mp.messaging.outgoing.{{name}}.connector=smallrye-kafka
 mp.messaging.outgoing.{{name}}.topic={{name}}
-mp.messaging.outgoing.{{name}}.key.serializer={{package}}.model.TestKeySerializer
-mp.messaging.outgoing.{{name}}.value.serializer={{package}}.model.TestPayloadSerializer
+mp.messaging.outgoing.{{name}}.key.serializer={{package}}.model.{{message.kafkaMessageBinding.key.name}}Serializer
+mp.messaging.outgoing.{{name}}.value.serializer={{package}}.model.{{message.payload.name}}Serializer
     {{/subscribe}}
 {{/channels}}
