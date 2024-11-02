@@ -13,8 +13,10 @@ public class {{serviceName}} {
 
     @KafkaListener(
         containerFactory = "{{name}}KafkaListenerContainerFactory",
-        topics = "${app.kafka.consumer.{{name}}.topic{{#kafkaChannelBinding.topic}}:{{kafkaChannelBinding.topic}}{{/kafkaChannelBinding.topic}} }",
-        groupId = "${app.kafka.consumer.{{name}}.groupId{{#subscribe.kafkaChannelItemBinding.groupId}}:{{subscribe.kafkaChannelItemBinding.groupId}}{{/subscribe.kafkaChannelItemBinding.groupId}} }")
+{{=<% %>=}}
+        topics = "${app.kafka.consumer.<%name%>.topic<%#kafkaChannelBinding.topic%>:<%kafkaChannelBinding.topic%><%/kafkaChannelBinding.topic%>}",
+        groupId = "${app.kafka.consumer.<%name%>.groupId<%#subscribe.kafkaChannelItemBinding.groupId%>:<%subscribe.kafkaChannelItemBinding.groupId%><%/subscribe.kafkaChannelItemBinding.groupId%>}")
+<%={{ }}=%>
     public void consume({{subscribe.message.payload.javaDataType}} payload) {
         delegate.consume(payload);
     }

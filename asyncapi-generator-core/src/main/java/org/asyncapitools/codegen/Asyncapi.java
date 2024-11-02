@@ -1,5 +1,6 @@
 package org.asyncapitools.codegen;
 
+import java.util.ArrayList;
 import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
@@ -102,7 +103,7 @@ public class Asyncapi {
 
     public String getJavaDataType() {
       // either a real object or an alias for a type
-      return name != null ? name : properties.stream().toList().get(0).getJavaDataType();
+      return name != null ? name : new ArrayList<>(properties).get(0).getJavaDataType();
     }
   }
 
